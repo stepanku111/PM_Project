@@ -1,0 +1,418 @@
+{% extends 'html/base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+    <head>
+        <link rel="stylesheet" type="text/css"  href="{% static 'css/result.css' %}"/>
+
+        <link rel="stylesheet" href="{% static 'MDB_PRO/css/bootstrap.css' %}"/>
+        <link rel="stylesheet" href="{% static 'MDB_PRO/css/mdb.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/all.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/brands.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/fontawesome.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/light.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/regular.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/solid.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/svg-with-js.css' %}"/>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/v4-shims.css' %}"/>
+
+        <script src="{% static 'fontawesome/js/all.js'  %}" ></script>
+        <script src="{% static 'fontawesome/js/brands.js'  %}" ></script>
+        <script src="{% static 'fontawesome/js/fontawesome.js'  %}" ></script>
+        <script src="{% static 'fontawesome/js/light.js'  %}" ></script>
+        <script src="{% static 'fontawesome/js/regular.js'  %}" ></script>
+        <script src="{% static 'fontawesome/js/solid.js'  %}" ></script>
+        <script src="{% static 'fontawesome/js/v4-shims.js'  %}" ></script>
+
+        <title>Результат по запросу "{{ user_request }}". CLOSY.RU</title>
+    </head>
+
+    <div id="loadWrapper">
+        <div id="loadImg" style="padding-top: 50vh">
+            <center>
+                <img src="{% static 'img/loader.svg' %}" width="50" alt="">
+            </center>
+        </div>
+    </div>
+
+    <div class="container-fluid header" style="background #222; padding: 0 2%">
+        <div class="row" style="padding: 0 25px">
+            <div class="col-md-6 header-col">
+                <span style="position: relative; bottom: -3px;">Лучшие цены на одежду и обувь на одном сайте</span>
+            </div>
+
+            <div class="col-md-2 header-col" style="background: #ef5777">
+                <div style="display: inline-block">
+                    <i class="fa fa-ruble-sign" style="font-size: 25px; padding-right: 7px"></i>
+                </div>
+
+                <div style="display: inline-block; bottom: 4px; position: relative;">
+                    <span>Начни экономить !</span>
+                </div>
+            </div>
+            <div class="col-md-4 header-col">
+                <span style="position: relative; bottom: -3px;">Только крупные и проверенные магазины</span>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" style="padding-top: 20px; width: 95%; border-bottom: 1px solid #222; padding-bottom: 15px;">
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+
+            <div class="col-md-6">
+                <center>
+                    <h2 style="color: #222; font-size: 50px; font-weight: 100;">CLOSY</h2>
+                </center>
+            </div>
+
+            <div class="col-md-3">
+                    <form action="{% url 'result' %}" method="GET" style="margin-top: 25px; margin-bottom: 25px;">
+                        <div class="input-group" style="height: 30px; border: 1px solid #666; border-radius: .25rem">
+                            <input type="text" name="user-request" class="form-control" placeholder="Поиск товара" autocomplete="off" style="border: 1px solid #fff; height: 25px; box-shadow: 0 0 0 0 rgba(0,123,255,0); margin-right: 15px; border: transparent; background: transparent; font-size: 13px;">
+                            <input type="hidden" name="user-size" value="">
+                            <input type="hidden" name="min-price" value="0">
+                            <input type="hidden" name="max-price" value="999999">
+                            <input type="hidden" name="page" value="1">
+                            <input type="hidden" name="sorting-type" value="Price ASC">
+                            <input type="hidden" name="discount-only" value="">
+                            <div class="input-group-append">
+                                <button class="btn btn-link" type="submit" style="margin: 0; padding: 0; margin-right: 10px">
+                                    <i class="fas fa-search" aria-hidden="true" style="color: #222; font-size: 12px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" id="user-request-and-cards-count" style="width: 95%">
+        <h3>По запросу "{{ user_request }}" найдено:</h3>
+    </div>
+
+    <div class="container-fluid" style="width: 95%">
+        <div class="row">
+            <div class="col-md-2">
+
+                <form id="form-filter">
+                    <input type="hidden" name="user-request" value="{{ user_request }}">
+                    <input type="hidden" name="user-size" value="">
+                    <input type="hidden" name="discount-only" value="">
+
+
+                    <input type="radio" class="form-check-input" id="sorting-type-price-asc" name="sorting-type" value="Price ASC" checked>
+                    <label class="form-check-label" for="sorting-type-price-asc">По возрастанию цены</label>
+
+                    <input type="radio" class="form-check-input" id="sorting-type-price-desc" name="sorting-type" value="Price DESC">
+                    <label class="form-check-label" for="sorting-type-price-desc">По убыванию цены</label>
+
+                    <input type="radio" class="form-check-input" id="sorting-type-discount-desc" name="sorting-type" value="Discount DESC">
+                    <label class="form-check-label" for="sorting-type-discount-desc">По размеру скидки</label>
+
+                    <div class="size-list-wrapper" style="padding: 5px 5px 0 5px; cursor: pointer">
+                        <div id="size-list-title">
+                            <i class="fas fa-caret-right" style="font-size: 20px; color: #ef5777"></i>
+                            <span>Размеры</span>
+                        </div>
+                        <div id="size-list-block" style="display: none">
+                            {% for size in size_list %}
+                            <input type="checkbox" class="form-check-input" name="user-size" id="{{ size }}" value="{{ size }}">
+                            <label class="form-check-label" for="{{ size }}">{{ size }}</label>
+                            <br>
+                        {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="price-wrapper" style="padding: 5px 5px 5px 5px; cursor: pointer">
+                        <div id="price-title">
+                            <i class="fas fa-caret-right" style="font-size: 20px; color: #ef5777"></i>
+                            <span>Цена</span>
+                        </div>
+                        <div id="price-block" style="display: none">
+                            От<input type="text" class="form-control" name="min-price" placeholder="0" autocomplete="off" style="width: 150px">
+                            До<input type="text" class="form-control" name="max-price" placeholder="15000" autocomplete="off" style="width: 150px">
+                        </div>
+                    </div>
+
+                    <div class="discount-only-wrapper">
+                        <input type="checkbox" class="form-check-input" id="discount-only" name="discount-only" value="AND Discount > 0">
+                        <label class="form-check-label" for="discount-only">Только со скидкой</label>
+                    </div>
+
+
+                    <input type="hidden" name="page" value="1">
+                    <br>
+
+                    <button type="button" id="reset-filter-btn" class="btn btn-outline-primary">Сбросить</button>
+                    <button type="button" id="form-filter-btn" class="btn btn-purple">Применить</button>
+                </form>
+
+                <button type="button" id="btn-scroll-to-top" class="btn btn-purple">
+                    <i class="fas fa-arrow-alt-up" style="color: #fff; font-size: 25px"></i>
+                </button>
+
+            </div>
+            <div class="col-md-10" id="cards">
+
+                <div class="row">
+                    {% for item in db_response_items %}
+                            <div class="col-6 col-sm-4 col-md-3" style="padding: 0 10px">
+                                <div class="product-grid">
+                                    <a href="{{ item.url }}" target="_blank">
+                                        <div class="product-image">
+                                            <img class="pic-1" src="{{ item.picture }}">
+                                            {% if item.discount > 0 %}
+                                                <span class="product-new-label">Sale</span>
+                                                <span class="product-discount-label">{{ item.discount }} %</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="product-content">
+                                            <h3 class="title">{{ item.name }}</h3>
+                                            <div class="price">{{ item.price }}₽
+                                                {% if item.old_price > 0 %}
+                                                    <span>{{ item.old_price }}₽</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="product-sizes">{{ item.size }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" id="pagination" style="width: 95%; margin-top: 50px">
+        <div class="row">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-10">
+                <ul class="pagination justify-content-center">
+                    {% if last_page >= 3 %}
+                        {% if page == 1 %}
+                            <li class="page-item active"><a class="page-link">{{ page }}</a></li>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:1 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-2" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:2 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:2 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>&raquo;</a>
+                                        </button>
+                                </li>
+                            </form>
+
+                        {% elif page == 2 %}
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-sub-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:-1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:-1 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <li class="page-item active"><a class="page-link">{{ page }}</a></li>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:1 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-1" class="page-link">
+                                    <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>&raquo;</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                        {% elif page == 3 %}
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-sub-2" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:-2 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:-2 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-sub-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:-1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:-1 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <li class="page-item active"><a class="page-link">{{ page }}</a></li>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-like-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ 1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>В начало &raquo;</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                        {% else %}
+                            ОШИБКА_ПАГИНАЦИИ
+
+                        {% endif %}
+
+                    {% elif last_page == 2 %}
+                        {% if page == 1 %}
+                            <li class="page-item active"><a class="page-link">{{ page }}</a></li>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:1 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-add-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>&raquo;</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                        {% elif page == 2 %}
+                             <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-sub-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ page|add:-1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>{{ page|add:-1 }}</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                            <li class="page-item active"><a class="page-link">{{ page }}</a></li>
+
+                            <form>
+                                <input type="hidden" name="user-request" value="{{ user_request }}">
+                                <input type="hidden" name="user-size" value="{{ user_size }}">
+                                <input type="hidden" name="min-price" value="{{ min_price }}">
+                                <input type="hidden" name="max-price" value="{{ max_price }}">
+                                <input type="hidden" name="sorting-type" value="{{ sorting_type }}">
+                                <input type="hidden" name="discount-only" value="{{ discount_only }}">
+                                <li class="page-item">
+                                    <button type="button" id="pagination-form-btn-page-like-1" class="page-link">
+                                        <a href='result?user-request={{ user_request }}&user-size={{ user_size }}&min-price={{ min_price }}&max-price={{ max_price }}&page={{ 1 }}&sorting-type={{ sorting_type }}&discount-only={{ discount_only }}'>В начало &raquo;</a>
+                                    </button>
+                                </li>
+                            </form>
+
+                        {% else %}
+                            ОШИБКА_ПАГИНАЦИИ
+                        {% endif %}
+
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{% static 'js/filter.js'  %}" ></script>
+    <script src="{% static 'js/openMenu.js'  %}" ></script>
+{#    <script src="{% static 'js/ajaxResultUpdate.js'  %}" ></script>#}
+{% endblock js %}

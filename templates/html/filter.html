@@ -1,0 +1,26 @@
+    <div class="row" id="items">
+        {% for item in db_response_items %}
+                <div class="col-6 col-sm-4 col-md-3" style="padding: 0 10px">
+                    <div class="product-grid">
+                        <a href="{{ item.url }}" target="_blank">
+                            <div class="product-image">
+                                <img class="pic-1" src="{{ item.picture }}">
+                                {% if item.discount > 0 %}
+                                    <span class="product-new-label">Sale</span>
+                                    <span class="product-discount-label">{{ item.discount }} %</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-content">
+                                <h3 class="title" style="padding-left: 1vw; padding-right: 1vw;">{{ item.name }}</h3>
+                                <div class="price" style="padding-left: 1vw; padding-right: 1vw;">{{ item.price }}₽
+                                    {% if item.oldPrice > 0 %}
+                                        <span>{{ item.oldPrice }}₽</span>
+                                    {% endif %}
+                                </div>
+                                <div class="product-sizes" style="padding-left: 1vw; padding-right: 1vw;">{{ item.size }}</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
